@@ -1,4 +1,4 @@
-05/11 03:24:11 - mmengine - INFO - 
+05/11 05:31:01 - mmengine - INFO - 
 ------------------------------------------------------------
 System environment:
     sys.platform: linux
@@ -40,7 +40,7 @@ Runtime environment:
     GPU number: 1
 ------------------------------------------------------------
 
-05/11 03:24:11 - mmengine - INFO - Config:
+05/11 05:31:01 - mmengine - INFO - Config:
 model = dict(
     type='ImageClassifier',
     backbone=dict(type='VGG', depth=11, num_classes=7),
@@ -123,7 +123,7 @@ optim_wrapper = dict(
     optimizer=dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001))
 param_scheduler = dict(
     type='MultiStepLR', by_epoch=True, milestones=[30, 60, 90], gamma=0.1)
-train_cfg = dict(by_epoch=True, max_epochs=20, val_interval=1)
+train_cfg = dict(by_epoch=True, max_epochs=25, val_interval=1)
 val_cfg = dict()
 test_cfg = dict()
 auto_scale_lr = dict(base_batch_size=256)
@@ -143,7 +143,7 @@ vis_backends = [dict(type='LocalVisBackend')]
 visualizer = dict(
     type='UniversalVisualizer', vis_backends=[dict(type='LocalVisBackend')])
 log_level = 'INFO'
-load_from = '/content/drive/MyDrive/AI_6/epoch_20.pth'
+load_from = '/content/mmsegmentation/mmpretrain/work_dirs/config/epoch_23.pth'
 resume = False
 randomness = dict(seed=0, deterministic=False)
 train_root = '/content/dataset/img_dir/ISIC2018_Task3_Training_Input'
@@ -155,8 +155,8 @@ test_csv = '/content/test.txt'
 launcher = 'none'
 work_dir = './work_dirs/config'
 
-05/11 03:24:15 - mmengine - INFO - Distributed training is not used, all SyncBatchNorm (SyncBN) layers in the model will be automatically reverted to BatchNormXd layers if they are used.
-05/11 03:24:15 - mmengine - INFO - Hooks will be executed in the following order:
+05/11 05:31:05 - mmengine - INFO - Distributed training is not used, all SyncBatchNorm (SyncBN) layers in the model will be automatically reverted to BatchNormXd layers if they are used.
+05/11 05:31:05 - mmengine - INFO - Hooks will be executed in the following order:
 before_run:
 (VERY_HIGH   ) RuntimeInfoHook                    
 (BELOW_NORMAL) LoggerHook                         
@@ -227,8 +227,8 @@ after_test_epoch:
 after_run:
 (BELOW_NORMAL) LoggerHook                         
  -------------------- 
-05/11 03:24:16 - mmengine - WARNING - The prefix is not set in metric class DumpResults.
-Loads checkpoint by local backend from path: /content/drive/MyDrive/AI_6/epoch_20.pth
-05/11 03:24:18 - mmengine - INFO - Load checkpoint from /content/drive/MyDrive/AI_6/epoch_20.pth
-05/11 03:24:38 - mmengine - INFO - Results has been saved to result.pkl.
-05/11 03:24:38 - mmengine - INFO - Epoch(test) [24/24]    accuracy/top1: 66.3360  data_time: 0.5481  time: 0.7977
+05/11 05:31:06 - mmengine - WARNING - The prefix is not set in metric class DumpResults.
+Loads checkpoint by local backend from path: /content/mmsegmentation/mmpretrain/work_dirs/config/epoch_23.pth
+05/11 05:31:11 - mmengine - INFO - Load checkpoint from /content/mmsegmentation/mmpretrain/work_dirs/config/epoch_23.pth
+05/11 05:31:31 - mmengine - INFO - Results has been saved to result.pkl.
+05/11 05:31:31 - mmengine - INFO - Epoch(test) [24/24]    accuracy/top1: 68.6508  data_time: 0.5292  time: 0.8158
