@@ -1,0 +1,387 @@
+2023/05/11 02:00:36 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: linux
+    Python: 3.10.11 (main, Apr  5 2023, 14:15:10) [GCC 9.4.0]
+    CUDA available: True
+    numpy_random_seed: 0
+    GPU 0: Tesla T4
+    CUDA_HOME: /usr/local/cuda
+    NVCC: Cuda compilation tools, release 11.8, V11.8.89
+    GCC: x86_64-linux-gnu-gcc (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+    PyTorch: 2.0.0+cu118
+    PyTorch compiling details: PyTorch built with:
+  - GCC 9.3
+  - C++ Version: 201703
+  - Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.7.3 (Git Hash 6dbeffbae1f23cbbeae17adb7b5b13f1f37c080e)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.8
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_90,code=sm_90
+  - CuDNN 8.7
+  - Magma 2.6.1
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.8, CUDNN_VERSION=8.7.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wunused-local-typedefs -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_DISABLE_GPU_ASSERTS=ON, TORCH_VERSION=2.0.0, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
+
+    TorchVision: 0.15.1+cu118
+    OpenCV: 4.7.0
+    MMEngine: 0.7.3
+
+Runtime environment:
+    cudnn_benchmark: False
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    dist_cfg: {'backend': 'nccl'}
+    seed: 0
+    deterministic: False
+    Distributed launcher: none
+    Distributed training: False
+    GPU number: 1
+------------------------------------------------------------
+
+2023/05/11 02:00:36 - mmengine - INFO - Config:
+model = dict(
+    type='ImageClassifier',
+    backbone=dict(type='VGG', depth=11, num_classes=7),
+    neck=None,
+    head=dict(
+        type='ClsHead',
+        loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
+        topk=(1, 5)))
+dataset_type = 'ImageNet'
+data_preprocessor = dict(
+    num_classes=1000,
+    mean=[123.675, 116.28, 103.53],
+    std=[58.395, 57.12, 57.375],
+    to_rgb=True)
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='RandomResizedCrop', scale=224, backend='pillow'),
+    dict(type='RandomFlip', prob=0.5, direction='horizontal'),
+    dict(type='PackInputs')
+]
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='ResizeEdge', scale=256, edge='short', backend='pillow'),
+    dict(type='CenterCrop', crop_size=224),
+    dict(type='PackInputs')
+]
+train_dataloader = dict(
+    pin_memory=True,
+    persistent_workers=True,
+    collate_fn=dict(type='default_collate'),
+    batch_size=128,
+    num_workers=2,
+    dataset=dict(
+        type='ImageNet',
+        data_root='data/imagenet',
+        ann_file='/content/train.txt',
+        data_prefix='/content/dataset/img_dir/ISIC2018_Task3_Training_Input',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='RandomResizedCrop', scale=224, backend='pillow'),
+            dict(type='RandomFlip', prob=0.5, direction='horizontal'),
+            dict(type='PackInputs')
+        ],
+        classes=['MEL', 'NV', 'BCC', 'AKIEC', 'BKL', 'DF', 'VASC']),
+    sampler=dict(type='DefaultSampler', shuffle=True))
+val_dataloader = dict(
+    pin_memory=True,
+    persistent_workers=True,
+    collate_fn=dict(type='default_collate'),
+    batch_size=64,
+    num_workers=2,
+    dataset=dict(
+        type='ImageNet',
+        data_root='data/imagenet',
+        ann_file='/content/val.txt',
+        data_prefix='/content/dataset/img_dir/ISIC2018_Task3_Validation_Input',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='ResizeEdge', scale=256, edge='short', backend='pillow'),
+            dict(type='CenterCrop', crop_size=224),
+            dict(type='PackInputs')
+        ],
+        classes=['MEL', 'NV', 'BCC', 'AKIEC', 'BKL', 'DF', 'VASC']),
+    sampler=dict(type='DefaultSampler', shuffle=False))
+val_evaluator = dict(type='Accuracy', topk=1)
+test_dataloader = dict(
+    pin_memory=True,
+    persistent_workers=True,
+    collate_fn=dict(type='default_collate'),
+    batch_size=64,
+    num_workers=2,
+    dataset=dict(
+        type='ImageNet',
+        data_root='data/imagenet',
+        ann_file='/content/test.txt',
+        data_prefix='/content/dataset/img_dir/ISIC2018_Task3_Test_Input',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='ResizeEdge', scale=256, edge='short', backend='pillow'),
+            dict(type='CenterCrop', crop_size=224),
+            dict(type='PackInputs')
+        ],
+        classes=['MEL', 'NV', 'BCC', 'AKIEC', 'BKL', 'DF', 'VASC']),
+    sampler=dict(type='DefaultSampler', shuffle=False))
+test_evaluator = dict(type='Accuracy', topk=1)
+optim_wrapper = dict(
+    optimizer=dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001))
+param_scheduler = dict(
+    type='MultiStepLR', by_epoch=True, milestones=[30, 60, 90], gamma=0.1)
+train_cfg = dict(by_epoch=True, max_epochs=20, val_interval=1)
+val_cfg = dict()
+test_cfg = dict()
+auto_scale_lr = dict(base_batch_size=256)
+default_scope = 'mmpretrain'
+default_hooks = dict(
+    timer=dict(type='IterTimerHook'),
+    logger=dict(type='LoggerHook', interval=100),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    checkpoint=dict(type='CheckpointHook', interval=1),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    visualization=dict(type='VisualizationHook', enable=False))
+env_cfg = dict(
+    cudnn_benchmark=False,
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0),
+    dist_cfg=dict(backend='nccl'))
+vis_backends = [dict(type='LocalVisBackend')]
+visualizer = dict(
+    type='UniversalVisualizer', vis_backends=[dict(type='LocalVisBackend')])
+log_level = 'INFO'
+load_from = None
+resume = False
+randomness = dict(seed=0, deterministic=False)
+train_root = '/content/dataset/img_dir/ISIC2018_Task3_Training_Input'
+val_root = '/content/dataset/img_dir/ISIC2018_Task3_Validation_Input'
+test_root = '/content/dataset/img_dir/ISIC2018_Task3_Test_Input'
+train_csv = '/content/train.txt'
+val_csv = '/content/val.txt'
+test_csv = '/content/test.txt'
+launcher = 'none'
+work_dir = './work_dirs/config'
+
+2023/05/11 02:00:43 - mmengine - INFO - Distributed training is not used, all SyncBatchNorm (SyncBN) layers in the model will be automatically reverted to BatchNormXd layers if they are used.
+2023/05/11 02:00:43 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train:
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+Name of parameter - Initialization information
+
+backbone.features.0.conv.weight - torch.Size([64, 3, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.features.0.conv.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.features.2.conv.weight - torch.Size([128, 64, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.features.2.conv.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.features.4.conv.weight - torch.Size([256, 128, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.features.4.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.features.5.conv.weight - torch.Size([256, 256, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.features.5.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.features.7.conv.weight - torch.Size([512, 256, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.features.7.conv.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.features.8.conv.weight - torch.Size([512, 512, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.features.8.conv.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.features.10.conv.weight - torch.Size([512, 512, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.features.10.conv.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.features.11.conv.weight - torch.Size([512, 512, 3, 3]): 
+KaimingInit: a=0, mode=fan_out, nonlinearity=relu, distribution =normal, bias=0 
+
+backbone.features.11.conv.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.classifier.0.weight - torch.Size([4096, 25088]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+backbone.classifier.0.bias - torch.Size([4096]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+backbone.classifier.3.weight - torch.Size([4096, 4096]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+backbone.classifier.3.bias - torch.Size([4096]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+backbone.classifier.6.weight - torch.Size([7, 4096]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+backbone.classifier.6.bias - torch.Size([7]): 
+NormalInit: mean=0, std=0.01, bias=0 
+2023/05/11 02:00:46 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+2023/05/11 02:00:46 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+2023/05/11 02:00:46 - mmengine - INFO - Checkpoints will be saved to /content/mmsegmentation/mmpretrain/work_dirs/config.
+2023/05/11 02:03:02 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:03:02 - mmengine - INFO - Epoch(train)  [1][79/79]  lr: 1.0000e-02  eta: 0:43:11  time: 1.6029  data_time: 0.8135  memory: 8629  loss: 0.9736
+2023/05/11 02:03:02 - mmengine - INFO - Saving checkpoint at 1 epochs
+2023/05/11 02:03:11 - mmengine - INFO - Epoch(val) [1][4/4]    accuracy/top1: 63.7306  data_time: 0.4728  time: 0.5999
+2023/05/11 02:05:32 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:05:32 - mmengine - INFO - Epoch(train)  [2][79/79]  lr: 1.0000e-02  eta: 0:41:39  time: 1.4635  data_time: 0.6795  memory: 8629  loss: 0.9572
+2023/05/11 02:05:32 - mmengine - INFO - Saving checkpoint at 2 epochs
+2023/05/11 02:05:40 - mmengine - INFO - Epoch(val) [2][4/4]    accuracy/top1: 65.2850  data_time: 0.3213  time: 0.4219
+2023/05/11 02:07:57 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:07:57 - mmengine - INFO - Epoch(train)  [3][79/79]  lr: 1.0000e-02  eta: 0:39:12  time: 1.6327  data_time: 0.8469  memory: 8629  loss: 0.9679
+2023/05/11 02:07:57 - mmengine - INFO - Saving checkpoint at 3 epochs
+2023/05/11 02:08:07 - mmengine - INFO - Epoch(val) [3][4/4]    accuracy/top1: 63.2124  data_time: 0.5457  time: 0.6477
+2023/05/11 02:10:21 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:10:21 - mmengine - INFO - Epoch(train)  [4][79/79]  lr: 1.0000e-02  eta: 0:36:35  time: 1.3579  data_time: 0.5741  memory: 8629  loss: 0.9176
+2023/05/11 02:10:21 - mmengine - INFO - Saving checkpoint at 4 epochs
+2023/05/11 02:10:29 - mmengine - INFO - Epoch(val) [4][4/4]    accuracy/top1: 64.7668  data_time: 0.3513  time: 0.4467
+2023/05/11 02:12:47 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:12:47 - mmengine - INFO - Epoch(train)  [5][79/79]  lr: 1.0000e-02  eta: 0:34:20  time: 1.5485  data_time: 0.7635  memory: 8629  loss: 0.8598
+2023/05/11 02:12:47 - mmengine - INFO - Saving checkpoint at 5 epochs
+2023/05/11 02:12:56 - mmengine - INFO - Epoch(val) [5][4/4]    accuracy/top1: 71.5026  data_time: 0.5546  time: 0.6537
+2023/05/11 02:15:13 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:15:13 - mmengine - INFO - Epoch(train)  [6][79/79]  lr: 1.0000e-02  eta: 0:32:02  time: 1.4494  data_time: 0.6652  memory: 8629  loss: 0.8868
+2023/05/11 02:15:13 - mmengine - INFO - Saving checkpoint at 6 epochs
+2023/05/11 02:15:22 - mmengine - INFO - Epoch(val) [6][4/4]    accuracy/top1: 73.0570  data_time: 0.3852  time: 0.4846
+2023/05/11 02:17:39 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:17:39 - mmengine - INFO - Epoch(train)  [7][79/79]  lr: 1.0000e-02  eta: 0:29:44  time: 1.5272  data_time: 0.7371  memory: 8629  loss: 0.8531
+2023/05/11 02:17:39 - mmengine - INFO - Saving checkpoint at 7 epochs
+2023/05/11 02:17:48 - mmengine - INFO - Epoch(val) [7][4/4]    accuracy/top1: 72.5389  data_time: 0.5616  time: 0.6596
+2023/05/11 02:20:04 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:20:04 - mmengine - INFO - Epoch(train)  [8][79/79]  lr: 1.0000e-02  eta: 0:27:26  time: 1.3228  data_time: 0.5397  memory: 8629  loss: 0.8647
+2023/05/11 02:20:04 - mmengine - INFO - Saving checkpoint at 8 epochs
+2023/05/11 02:20:13 - mmengine - INFO - Epoch(val) [8][4/4]    accuracy/top1: 69.9482  data_time: 0.3261  time: 0.4240
+2023/05/11 02:22:31 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:22:31 - mmengine - INFO - Epoch(train)  [9][79/79]  lr: 1.0000e-02  eta: 0:25:10  time: 1.4816  data_time: 0.6922  memory: 8629  loss: 0.8644
+2023/05/11 02:22:31 - mmengine - INFO - Saving checkpoint at 9 epochs
+2023/05/11 02:22:40 - mmengine - INFO - Epoch(val) [9][4/4]    accuracy/top1: 74.0933  data_time: 0.5543  time: 0.6503
+2023/05/11 02:24:55 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:24:55 - mmengine - INFO - Epoch(train) [10][79/79]  lr: 1.0000e-02  eta: 0:22:50  time: 1.3585  data_time: 0.5752  memory: 8629  loss: 0.7828
+2023/05/11 02:24:55 - mmengine - INFO - Saving checkpoint at 10 epochs
+2023/05/11 02:25:03 - mmengine - INFO - Epoch(val) [10][4/4]    accuracy/top1: 69.9482  data_time: 0.3243  time: 0.4207
+2023/05/11 02:27:18 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:27:18 - mmengine - INFO - Epoch(train) [11][79/79]  lr: 1.0000e-02  eta: 0:20:31  time: 1.4740  data_time: 0.6882  memory: 8629  loss: 0.8012
+2023/05/11 02:27:18 - mmengine - INFO - Saving checkpoint at 11 epochs
+2023/05/11 02:27:27 - mmengine - INFO - Epoch(val) [11][4/4]    accuracy/top1: 72.0207  data_time: 0.5593  time: 0.6621
+2023/05/11 02:29:40 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:29:40 - mmengine - INFO - Epoch(train) [12][79/79]  lr: 1.0000e-02  eta: 0:18:12  time: 1.3009  data_time: 0.5189  memory: 8629  loss: 0.8282
+2023/05/11 02:29:40 - mmengine - INFO - Saving checkpoint at 12 epochs
+2023/05/11 02:29:49 - mmengine - INFO - Epoch(val) [12][4/4]    accuracy/top1: 72.0207  data_time: 0.3764  time: 0.4764
+2023/05/11 02:31:17 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:32:00 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:32:00 - mmengine - INFO - Epoch(train) [13][79/79]  lr: 1.0000e-02  eta: 0:15:52  time: 1.2873  data_time: 0.5066  memory: 8629  loss: 0.7921
+2023/05/11 02:32:00 - mmengine - INFO - Saving checkpoint at 13 epochs
+2023/05/11 02:32:08 - mmengine - INFO - Epoch(val) [13][4/4]    accuracy/top1: 75.1295  data_time: 0.3166  time: 0.4158
+2023/05/11 02:34:22 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:34:22 - mmengine - INFO - Epoch(train) [14][79/79]  lr: 1.0000e-02  eta: 0:13:35  time: 1.4244  data_time: 0.6413  memory: 8629  loss: 0.8154
+2023/05/11 02:34:22 - mmengine - INFO - Saving checkpoint at 14 epochs
+2023/05/11 02:34:31 - mmengine - INFO - Epoch(val) [14][4/4]    accuracy/top1: 77.7202  data_time: 0.5251  time: 0.6255
+2023/05/11 02:36:42 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:36:42 - mmengine - INFO - Epoch(train) [15][79/79]  lr: 1.0000e-02  eta: 0:11:18  time: 1.3801  data_time: 0.5993  memory: 8629  loss: 0.7546
+2023/05/11 02:36:42 - mmengine - INFO - Saving checkpoint at 15 epochs
+2023/05/11 02:36:52 - mmengine - INFO - Epoch(val) [15][4/4]    accuracy/top1: 77.2021  data_time: 0.5279  time: 0.6286
+2023/05/11 02:39:02 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:39:02 - mmengine - INFO - Epoch(train) [16][79/79]  lr: 1.0000e-02  eta: 0:09:01  time: 1.2745  data_time: 0.4958  memory: 8629  loss: 0.7930
+2023/05/11 02:39:02 - mmengine - INFO - Saving checkpoint at 16 epochs
+2023/05/11 02:39:11 - mmengine - INFO - Epoch(val) [16][4/4]    accuracy/top1: 76.6839  data_time: 0.3251  time: 0.4215
+2023/05/11 02:41:24 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:41:24 - mmengine - INFO - Epoch(train) [17][79/79]  lr: 1.0000e-02  eta: 0:06:45  time: 1.5502  data_time: 0.7597  memory: 8629  loss: 0.7488
+2023/05/11 02:41:24 - mmengine - INFO - Saving checkpoint at 17 epochs
+2023/05/11 02:41:32 - mmengine - INFO - Epoch(val) [17][4/4]    accuracy/top1: 76.6839  data_time: 0.3852  time: 0.4865
+2023/05/11 02:43:47 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:43:47 - mmengine - INFO - Epoch(train) [18][79/79]  lr: 1.0000e-02  eta: 0:04:30  time: 1.5566  data_time: 0.7676  memory: 8629  loss: 0.7954
+2023/05/11 02:43:47 - mmengine - INFO - Saving checkpoint at 18 epochs
+2023/05/11 02:43:56 - mmengine - INFO - Epoch(val) [18][4/4]    accuracy/top1: 74.0933  data_time: 0.5321  time: 0.6316
+2023/05/11 02:46:11 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:46:11 - mmengine - INFO - Epoch(train) [19][79/79]  lr: 1.0000e-02  eta: 0:02:15  time: 1.3156  data_time: 0.5303  memory: 8629  loss: 0.7609
+2023/05/11 02:46:11 - mmengine - INFO - Saving checkpoint at 19 epochs
+2023/05/11 02:46:19 - mmengine - INFO - Epoch(val) [19][4/4]    accuracy/top1: 79.7927  data_time: 0.3204  time: 0.4200
+2023/05/11 02:48:35 - mmengine - INFO - Exp name: config_20230511_020034
+2023/05/11 02:48:35 - mmengine - INFO - Epoch(train) [20][79/79]  lr: 1.0000e-02  eta: 0:00:00  time: 1.6008  data_time: 0.8167  memory: 8629  loss: 0.7131
+2023/05/11 02:48:35 - mmengine - INFO - Saving checkpoint at 20 epochs
+2023/05/11 02:48:44 - mmengine - INFO - Epoch(val) [20][4/4]    accuracy/top1: 79.7927  data_time: 0.5410  time: 0.6407
